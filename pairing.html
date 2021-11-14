@@ -181,10 +181,6 @@
           <div class="title">
             Olá <span id="name"></span>! Aperte para iniciar sorteio !
           </div>
-          <script>
-            document.getElementById("name").innerText = name;
-          </script>
-
           <div class="pairing">
             </br>
             <div><button id="choose">Quem é o meu amigo secreto?</button></div>
@@ -242,6 +238,7 @@
       ).toString(CryptoJS.enc.Utf8);
 
      pairingDefinition = pairing.match(/^([^(]+)(?: (\([^)]+\)))?$/);
+     document.getElementById("name").innerText = name;
      document.getElementById("pairing-name").innerText =
                 pairingDefinition[1];
 
