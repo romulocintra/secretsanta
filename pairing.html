@@ -204,18 +204,6 @@
           <div class="pairing">
             <div id="pairing-name"></div>
             <div id="pairing-details"></div>
-            <script>
-              document.getElementById("pairing-name").innerText =
-                pairingDefinition[1];
-
-              if (pairingDefinition[2]) {
-                document.getElementById("pairing-details").innerText =
-                  pairingDefinition[2];
-              } else {
-                document.getElementById("pairing-details").style.display =
-                  "none";
-              }
-            </script>
           </div>
 
           <div class="title">Boa Sorte!</div>
@@ -234,7 +222,8 @@
 
 
     <script>
-      var queryString = _.chain(location.search.slice(1).split(/&/g))
+   function init(){
+         var queryString = _.chain(location.search.slice(1).split(/&/g))
         .map(function (item) {
           if (item)
             return item.split(/=/).map(function (str) {
@@ -251,22 +240,31 @@
         queryString.pairing,
         queryString.key
       ).toString(CryptoJS.enc.Utf8);
-      var pairingDefinition = pairing.match(/^([^(]+)(?: (\([^)]+\)))?$/);
 
-     (function(){
-        const view = localStorage.getItem('view-result');
-        if(!view){
-           document.querySelector('#sortear').classList.remove('display-content-none');
-                document.querySelector('#choose').addEventListener('click', (evt)=>{
-                document.querySelector('#sortear').classList.add('display-content-none');
-                document.querySelector('#result').classList.remove('display-content-none');
-                localStorage.setItem('view-result', true);
-           });
-        }else{
-           document.querySelector('#result').classList.remove('display-content-none');
-        }
-      })();
+     pairingDefinition = pairing.match(/^([^(]+)(?: (\([^)]+\)))?$/);
+     document.getElementById("pairing-name").innerText =
+                pairingDefinition[1];
 
-      
+              if (pairingDefinition[2]) {
+                document.getElementById("pairing-details").innerText =
+                  pairingDefinition[2];
+              } else {
+                document.getElementById("pairing-details").style.display =
+                  "none";
+              }
+    const view = localStorage.getItem('view-result');
+    if(!view){
+       document.querySelector('#sortear').classList.remove('display-content-none');
+            document.querySelector('#choose').addEventListener('click', (evt)=>{
+            document.querySelector('#sortear').classList.add('display-content-none');
+            document.querySelector('#result').classList.remove('display-content-none');
+            localStorage.setItem('view-result', true);
+       });
+    }else{
+       document.querySelector('#result').classList.remove('display-content-none');
+    }
+}
+
+      init();
     </script>
 </html>
