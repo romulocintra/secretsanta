@@ -1,179 +1,272 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Secret Santa Pairing</title>
 
-    <head>
+    <script src="vendors/Lodash-3.10.1.js"></script>
+    <script src="vendors/Cryptojs.aes-3.1.2.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-        <meta charset="utf-8" />
-        <title>Secret Santa Pairing</title>
+      html,
+      body,
+      .main {
+        margin: 0;
 
-        <script src="vendors/Lodash-3.10.1.js"></script>
-        <script src="vendors/Cryptojs.aes-3.1.2.js"></script>
+        width: 100%;
+        height: 100%;
 
-        <style>
+        padding: 0;
+      }
 
-            * {
-                box-sizing: border-box;
-            }
+      body {
+        background: url(./assets/snow.png), url(./assets/santa.png),
+          url(./assets/snow.png), radial-gradient(#fb3b3b, #ef3d3d);
+        background-repeat: repeat, no-repeat, repeat, no-repeat;
 
-            html, body, .main {
-                margin: 0;
+        animation-name: snow;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
 
-                width: 100%;
-                height: 100%;
+        font-family: "Comic Sans MS";
+      }
 
-                padding: 0;
-            }
+      @keyframes snow {
+        from {
+          background-position: 130px 40px, bottom right, 0 0, 0 0;
+        }
+        to {
+          background-position: 130px 640px, bottom right, 0 300px, 0 0;
+        }
+      }
+      
+      .display-content-none {
+        display: none;
+      }
 
-            body {
-                background: url(./assets/snow.png), url(./assets/santa.png), url(./assets/snow.png), radial-gradient(#FB3B3B, #EF3D3D);
-                background-repeat: repeat, no-repeat, repeat, no-repeat;
+      .spirit-of-christmas {
+        display: block;
 
-                animation-name: snow;
-                animation-duration: 5s;
-                animation-iteration-count: infinite;
-                animation-timing-function: linear;
+        position: absolute;
+        bottom: 0;
+        left: 0;
 
-                font-family: 'Comic Sans MS';
-            }
+        padding: 20px;
 
-            @keyframes snow {
-                from { background-position: 130px 40px, bottom right, 0 0, 0 0; }
-                to { background-position: 130px 640px, bottom right, 0 300px, 0 0; }
-            }
+        font-size: 10px;
+        text-decoration: none;
 
-            .spirit-of-christmas {
-                display: block;
+        color: #ffffff;
+      }
 
-                position: absolute;
-                bottom: 0;
-                left: 0;
+      .main {
+        display: flex;
+      }
 
-                padding: 20px;
+      .background {
+        position: absolute;
 
-                font-size: 10px;
-                text-decoration: none;
+        left: 0;
+        bottom: 0;
+      }
 
-                color: #FFFFFF;
-            }
+      .wrapper {
+        margin: auto;
+        padding: 20px;
 
-            .main {
-                display: flex;
-            }
+        background: repeating-linear-gradient(
+          45deg,
+          #5cc48a,
+          #5cc48a 30px,
+          #ffffff 30px,
+          #ffffff 60px,
+          #ef3d3d 60px,
+          #ef3d3d 90px,
+          #ffffff 90px,
+          #ffffff 120px
+        );
 
-            .background {
-                position: absolute;
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+      }
 
-                left: 0;
-                bottom: 0;
-            }
+      .content {
+        padding: 40px;
 
-            .wrapper {
-                margin: auto;
-                padding: 20px;
+        background: #ffffff;
 
-                background: repeating-linear-gradient(
-                    45deg,
-                    #5CC48A,
-                    #5CC48A 30px,
-                    #FFFFFF 30px,
-                    #FFFFFF 60px,
-                    #EF3D3D 60px,
-                    #EF3D3D 90px,
-                    #FFFFFF 90px,
-                    #FFFFFF 120px
-                );
+        text-align: center;
+      }
 
-                box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
-            }
+      .title {
+        font-size: 30px;
+      }
 
-            .content {
-                padding: 40px;
+      #pairing-name {
+        font-size: 90px;
+      }
 
-                background: #ffffff;
+      #pairing-details {
+        margin-bottom: 20px;
 
-                text-align: center;
-            }
+        font-size: 20px;
+      }
 
-            .title {
-                font-size: 30px;
-            }
+      .affiliate {
+        display: block;
+        box-sizing: content-box;
 
-            #pairing-name {
-                font-size: 90px;
-            }
+        margin-top: 40px;
 
-            #pairing-details {
-                margin-bottom: 20px;
+        border: none;
 
-                font-size: 20px;
-            }
+        background: rgba(255, 255, 255, 0.7);
+      }
 
-            .affiliate {
-                display: block;
-                box-sizing: content-box;
+      .affiliate + .affiliate {
+        margin-top: 40px;
+      }
 
-                margin-top: 40px;
+      button {
+        padding: 10px;
+        font-size: 18px;
+        margin: auto;
+        cursor: pointer;
+        width: 360px;
+        font-family: "Open Sans", sans-serif;
+      }
 
-                border: none;
+      button {
+        /* from the lovely https://codepen.io/FelipeMarcos/full/tfhEg */
+        position: relative;
+        background: #63a063;
+        border: 0;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 20px;
+        box-shadow: inset 0 0 0 1px #2b862b,
+          inset 0 0 0 2px rgba(255, 255, 255, 0.15), 0 8px 0 0 #648052,
+          0 8px 0px 1px rgba(0, 0, 0, 0.5), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
+      }
+      button:hover,
+      button:focus {
+        outline: 0;
+        top: 2px;
+        background: #63a063;
+        -webkit-transition: 0.2s ease-in-out;
+        -moz-transition: 0.2s ease-in-out;
+        -o-transition: 0.2s ease-in-out;
+        transition: 0.2s ease-in-out;
+        box-shadow: inset 0 0 0 1px #2b862b,
+          inset 0 0 0 2px rgba(255, 255, 255, 0.15), 0 6px 0 0 #648052,
+          0 6px 0px 1px rgba(0, 0, 0, 0.5), 0 6px 8px 1px rgba(0, 0, 0, 0.5);
+      }
+      button:active {
+        outline: 0;
+        top: 8px;
+        box-shadow: inset 0 0 0 1px #2b862b,
+          inset 0 0 0 2px rgba(255, 255, 255, 0.15), 0 1px 0 0 #648052,
+          0 1px 0px 1px rgba(0, 0, 0, 0.5), 0 1px 8px 1px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
 
-                background: rgba(255, 255, 255, .7);
-            }
+  <body>
+    <div class="main">
+      <div class="wrapper">
+        <div class="content display-content-none" id="sortear">
+          <div class="title">
+            Olá <span id="name"></span>! Aperte para iniciar sorteio !
+          </div>
+          <script>
+            document.getElementById("name").innerText = name;
+          </script>
 
-            .affiliate + .affiliate {
-                margin-top: 40px;
-            }
+          <div class="pairing">
+            </br>
+            <div><button id="choose">Quem é o meu amigo secreto?</button></div>
+          </div>
 
-        </style>
-
-        <script>
-
-            var queryString = _.chain( location.search.slice( 1 ).split( /&/g ) )
-                .map( function ( item ) { if ( item ) return item.split( /=/ ).map( function ( str ) { return decodeURIComponent( str ); } ); } )
-                .compact().object().value();
-
-            var name = queryString.name;
-
-            var pairing = CryptoJS.AES.decrypt( queryString.pairing, queryString.key ).toString(CryptoJS.enc.Utf8);
-            var pairingDefinition = pairing.match( /^([^(]+)(?: (\([^)]+\)))?$/ );
-
-        </script>
-
-    </head>
-
-    <body>
-
-        <div class="main">
-
-            <div class="wrapper">
-                <div class="content">
-
-                    <div class="title">Olá <span id="name"></span>! este ano o seu amigo secreto é : </div>
-                    <script>document.getElementById('name').innerText = name</script>
-
-                    <div class="pairing">
-                        <div id="pairing-name"></div>
-                        <div id="pairing-details"></div>
-                        <script>
-                            document.getElementById('pairing-name').innerText = pairingDefinition[1];
-
-                            if (pairingDefinition[2]) {
-                                document.getElementById('pairing-details').innerText = pairingDefinition[2];
-                            } else {
-                                document.getElementById('pairing-details').style.display = 'none';
-                            }
-                        </script>
-                    </div>
-
-                    <div class="title">Boa Sorte!</div>
-                </div>
-            </div>
-
-            <a href="http://arcanis.github.io/secretsanta/" class="spirit-of-christmas">
-                Want to start your own Secret Santa with your friends? Click here to get started!
-            </a>
-
+          
         </div>
 
-    </body>
+        <div class="content display-content-none" id="result">
+          <div class="title">
+            Olá <span id="name"></span>! este ano o seu amigo secreto é :
+          </div>
+          <script>
+            document.getElementById("name").innerText = name;
+          </script>
 
+          <div class="pairing">
+            <div id="pairing-name"></div>
+            <div id="pairing-details"></div>
+            <script>
+              document.getElementById("pairing-name").innerText =
+                pairingDefinition[1];
+
+              if (pairingDefinition[2]) {
+                document.getElementById("pairing-details").innerText =
+                  pairingDefinition[2];
+              } else {
+                document.getElementById("pairing-details").style.display =
+                  "none";
+              }
+            </script>
+          </div>
+
+          <div class="title">Boa Sorte!</div>
+        </div>
+      </div>
+
+      <a
+        href="http://arcanis.github.io/secretsanta/"
+        class="spirit-of-christmas"
+      >
+        Want to start your own Secret Santa with your friends? Click here to get
+        started!
+      </a>
+    </div>
+  </body>
+
+
+    <script>
+      var queryString = _.chain(location.search.slice(1).split(/&/g))
+        .map(function (item) {
+          if (item)
+            return item.split(/=/).map(function (str) {
+              return decodeURIComponent(str);
+            });
+        })
+        .compact()
+        .object()
+        .value();
+
+      var name = queryString.name;
+
+      var pairing = CryptoJS.AES.decrypt(
+        queryString.pairing,
+        queryString.key
+      ).toString(CryptoJS.enc.Utf8);
+      var pairingDefinition = pairing.match(/^([^(]+)(?: (\([^)]+\)))?$/);
+
+     (function(){
+        const view = localStorage.getItem('view-result');
+        if(!view){
+           document.querySelector('#sortear').classList.remove('display-content-none');
+                document.querySelector('#choose').addEventListener('click', (evt)=>{
+                document.querySelector('#sortear').classList.add('display-content-none');
+                document.querySelector('#result').classList.remove('display-content-none');
+                localStorage.setItem('view-result', true);
+           });
+        }else{
+           document.querySelector('#result').classList.remove('display-content-none');
+        }
+      })();
+
+      
+    </script>
 </html>
